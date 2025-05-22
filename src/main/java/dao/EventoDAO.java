@@ -30,7 +30,7 @@ public class EventoDAO {
         em.getTransaction().commit();
     }
 
-    
+
     public List<Concerto> getConcertiInStreaming(boolean inStreaming) {
         TypedQuery<Concerto> query = em.createQuery(
                 "SELECT c FROM Concerto c WHERE c.inStreaming = :inStreaming", Concerto.class);
