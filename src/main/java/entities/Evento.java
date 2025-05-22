@@ -5,7 +5,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-public class Evento {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_evento", discriminatorType = DiscriminatorType.STRING)
+public abstract class Evento {
     @Id
     @GeneratedValue
     private Long id;
@@ -19,12 +21,15 @@ public class Evento {
     @OneToMany(mappedBy = "evento")
     private List<Partecipazione> partecipazioni;
 
+    private int numeroMassimoPartecipanti;
 
     public Evento() {}
-    public Evento(String titolo, LocalDate data, Location location) {
+
+    public Evento(String titolo, LocalDate data, Location location, int numeroMassimoPartecipanti) {
         this.titolo = titolo;
         this.data = data;
         this.location = location;
+        this.numeroMassimoPartecipanti = numeroMassimoPartecipanti;
     }
 
     public Long getId() {

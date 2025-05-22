@@ -1,8 +1,11 @@
 package dao;
 
-import entities.Evento;
+import entities.*;
+import enumerating.GenereConcerto;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
+
+import java.util.List;
 
 public class EventoDAO {
     private final EntityManager em;
@@ -12,15 +15,9 @@ public class EventoDAO {
     }
 
     public void save(Evento e) {
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            em.persist(e);
-            tx.commit();
-        } catch (Exception ex) {
-            if (tx.isActive()) tx.rollback();
-            ex.printStackTrace();
-        }
+        em.getTransaction().begin();
+        em.persist(e);
+        em.getTransaction().commit();
     }
 
     public Evento findById(Long id) {
@@ -28,15 +25,55 @@ public class EventoDAO {
     }
 
     public void delete(Evento e) {
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            em.remove(e);
-            tx.commit();
-        } catch (Exception ex) {
-            if (tx.isActive()) tx.rollback();
-            ex.printStackTrace();
-        }
+        em.getTransaction().begin();
+        em.remove(e);
+        em.getTransaction().commit();
     }
-}
 
+    
+    public List<Concerto> getConcertiInStreaming(boolean inStreaming) {
+        TypedQuery<Concerto> query = em.createQuery(
+                "SELECT c FROM Concerto c WHERE c.inStreaming = :inStreaming", Concerto.class);
+        query.setParameter("inStreaming", inStreaming);
+        return query.getResultList();
+    }
+
+    public List<Concerto> getConcertiPerGenere(GenereConcerto genere) {
+        TypedQuery<Concerto> query = em.createQuery(
+                "SELECT c FROM Concerto c WHERE c.genere = :genere", Concerto.class);
+        query.setParameter("genere", genere);
+        return query.getResultList();
+    }
+
+
+    public List<PartitaDiCalcio> getPartiteVinteInCasa() {
+        return em.createNamedQuery("PartitaDiCalcio.getPartiteVinteInCasa", PartitaDiCalcio.class)
+                .getResultList();
+    }
+
+    public List<PartitaDiCalcio> getPartiteVinteInTrasferta() {
+        return em.createNamedQuery("PartitaDiCalcio.getPartiteVinteInTrasferta", PartitaDiCalcio.class)
+                .getResultList();
+    }
+
+    public List<PartitaDiCalcio> getPartitePareggiate() {
+        return em.createNamedQuery("PartitaDiCalcio.getPartitePareggiate", PartitaDiCalcio.class)
+                .getResultList();
+    }
+
+
+    public List<GaraDiAtletica> getGareDiAtleticaPerVincitore(Persona vincitore) {
+        return em.createNamedQuery("GaraDiAtletica.getGarePerVincitore", GaraDiAtletica.class)
+                .setParameter("vincitore", vincitore)
+                .getResultList();
+    }
+
+    public List<GaraDiAtletica> getGareDiAtleticaPerPartecipante(Persona partecipante) {
+        return em.createNamedQuery("GaraDiAtletica.getGarePerPartecipante", GaraDiAtletica.class)
+                .setParameter("partecipante", partecipante)
+                .getResultList();
+    }
+
+
+
+}
